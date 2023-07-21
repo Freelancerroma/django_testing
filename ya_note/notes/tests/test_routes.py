@@ -3,6 +3,7 @@ from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+
 from notes.models import Note
 
 User = get_user_model()
@@ -20,7 +21,12 @@ class TestRoutes(TestCase):
             author=cls.author,
         )
 
-    def test_pages_availability(self):
+    def test_pages_availability_for_anonymous(self):
+        '''
+        Незарегистрированному пользователю доступны страницы:
+        главная, регистрации, входа и выхода учетной записи
+        '''
+
         urls = (
             'notes:home',
             'users:login',
@@ -34,6 +40,13 @@ class TestRoutes(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_detail_availability_for_author(self):
+        '''
+        Страницы отдельной заметки, удаления и редактирования заметки
+        доступны только автору заметки.
+        Если на эти страницы попытается зайти другой пользователь —
+        вернётся ошибка 404.
+        '''
+
         users_statuses = (
             (self.author, HTTPStatus.OK),
             (self.reader, HTTPStatus.NOT_FOUND),
@@ -51,6 +64,16 @@ class TestRoutes(TestCase):
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_anonymous(self):
+        '''
+        При попытке перейти на страницу
+        списка заметок,
+        страницу успешного добавления записи,
+        страницу добавления заметки,
+        отдельной заметки,
+        редактирования или удаления заметки
+        анонимный пользователь перенаправляется на страницу логина
+        '''
+
         login_url = reverse('users:login',)
         for name, args in (
             ('notes:add', None),
@@ -67,10 +90,18 @@ class TestRoutes(TestCase):
                 self.assertRedirects(response, redirect_url)
 
     def test_add_success_availability(self):
+        '''
+        Аутентифицированному пользователю доступна
+        страница со списком заметок,
+        страница успешного добавления заметки,
+        страница добавления новой заметки
+        '''
+
         user = self.author
         self.client.force_login(user)
         for name in (
             'notes:add',
+            'notes:list',
             'notes:success',
         ):
             with self.subTest(name=name):

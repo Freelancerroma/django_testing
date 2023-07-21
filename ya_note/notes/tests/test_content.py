@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+
 from notes.models import Note
 
 User = get_user_model()
@@ -18,32 +19,34 @@ class TestContent(TestCase):
             author=cls.author,
         )
 
-    def test_user_self_notes_list(self):
-        user = self.author
-        self.client.force_login(user)
+    def test_notes_list_for_different_users(self):
+        '''
+        Отдельная заметка передаётся на страницу со списком заметок
+        в списке object_list в словаре context.
+        В список заметок одного пользователя
+        не попадают заметки другого пользователя.
+        '''
+        users = (
+            (self.author, True),
+            (self.reader, False),
+        )
         url = reverse('notes:list',)
-        response = self.client.get(url)
-        object_list = response.context['object_list']
-        self.assertIn(self.note, object_list)
+        for user, value in users:
+            self.client.force_login(user)
+            with self.subTest(user=user.username, value=value):
+                response = self.client.get(url)
+                object_list = response.context['object_list']
+                self.assertEqual(self.note in object_list, value)
 
-    def test_another_user_self_notes_list(self):
-        user = self.reader
-        self.client.force_login(user)
-        url = reverse('notes:list',)
-        response = self.client.get(url)
-        object_list = response.context['object_list']
-        self.assertNotIn(self.note, object_list)
-
-    def test_authorized_client_has_form_for_add(self):
-        user = self.author
-        self.client.force_login(user)
-        url = reverse('notes:add', None)
-        response = self.client.get(url)
-        self.assertIn('form', response.context)
-
-    def test_authorized_client_has_form_for_edit(self):
-        user = self.author
-        self.client.force_login(user)
-        url = reverse('notes:edit', args=(self.note.slug,))
-        response = self.client.get(url)
-        self.assertIn('form', response.context)
+    def test_authorized_client_has_form(self):
+        '''На страницы создания и редактирования заметки передаются формы'''
+        urls = (
+            ('notes:add', None),
+            ('notes:edit', (self.note.slug,)),
+        )
+        for page, args in urls:
+            self.client.force_login(self.author)
+            with self.subTest(page=page):
+                url = reverse(page, args=args)
+                response = self.client.get(url)
+                self.assertIn('form', response.context)

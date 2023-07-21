@@ -1,7 +1,8 @@
 from http import HTTPStatus
 
-import pytest
 from django.urls import reverse
+
+import pytest
 from pytest_django.asserts import assertRedirects
 
 
@@ -16,7 +17,12 @@ from pytest_django.asserts import assertRedirects
     )
 )
 @pytest.mark.django_db
-def test_pages_availability_for_anonymous_user(client, name, args):
+def test_pages_availability_for_anonymous_user(client, name, args,):
+    '''
+    Анонимному пользователю доступны страницы:
+    главная, отдельной новости, регистрация, вход и выход из учетной записи
+    '''
+
     url = reverse(name, args=args)
     response = client.get(url)
     assert response.status_code == HTTPStatus.OK
@@ -29,21 +35,13 @@ def test_pages_availability_for_anonymous_user(client, name, args):
         ('news:edit', pytest.lazy_fixture('comment_pk')),
     )
 )
-def test_pages_availability_for_auth_user(author_client, name, args):
-    url = reverse(name, args=args)
-    response = author_client.get(url)
-    assert response.status_code == HTTPStatus.OK
-
-
-@pytest.mark.parametrize(
-    'name, args',
-    (
-        ('news:delete', pytest.lazy_fixture('comment_pk')),
-        ('news:edit', pytest.lazy_fixture('comment_pk')),
-    )
-)
 @pytest.mark.django_db
-def test_redirects_for_anonymous_user(client, name, args):
+def test_redirects_for_anonymous_user(client, name, args,):
+    '''
+    Анонимный пользователь перенаправляется на страницу авторизации
+    при переходе на страницы редактирования и удаления комментария
+    '''
+
     login_url = reverse('users:login')
     url = reverse(name, args=args)
     expected_url = f'{login_url}?next={url}'
@@ -69,8 +67,14 @@ def test_pages_availability_for_different_users(
     parametrized_client,
     expected_status,
     name,
-    comment_pk
+    comment_pk,
 ):
+    '''
+    Авторизованный пользователь не может переходить
+    на страницы удаления и изменения чужих комментариев.
+    Автору доступны страницы удаления и редактирования комментария.
+    '''
+
     url = reverse(name, args=comment_pk)
     response = parametrized_client.get(url)
     assert response.status_code == expected_status

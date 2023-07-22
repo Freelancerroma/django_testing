@@ -1,17 +1,16 @@
 from datetime import date
 
+import pytest
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
-
-import pytest
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.usefixtures('news_list')
 def test_news_count(client,):
-    '''Количество новостей на главной не больше 10'''
+    """Количество новостей на главной не больше 10"""
 
     url = reverse('news:home')
     response = client.get(url)
@@ -21,7 +20,7 @@ def test_news_count(client,):
 
 @pytest.mark.usefixtures('news_list')
 def test_news_sort(client,):
-    '''Сортировка новостей на главной от новой к старой'''
+    """Сортировка новостей на главной от новой к старой"""
 
     url = reverse('news:home')
     response = client.get(url)
@@ -36,10 +35,10 @@ def test_news_sort(client,):
 
 @pytest.mark.usefixtures('comment_list')
 def test_comment_sort(client, news_pk,):
-    '''
+    """
     Комментарии на странице отдельной новости
     отсортированы от старой к новой
-    '''
+    """
 
     url = reverse('news:detail', args=news_pk)
     response = client.get(url)
@@ -60,10 +59,10 @@ def test_comment_sort(client, news_pk,):
     )
 )
 def test_client_has_form(user, expected_form, news_pk,):
-    '''
+    """
     Авторизованному пользователю доступна форма для отправки комментария.
     Неавторизованному пользователю не доступна форма для отправки.
-    '''
+    """
 
     url = reverse('news:detail', args=news_pk)
     response = user.get(url)

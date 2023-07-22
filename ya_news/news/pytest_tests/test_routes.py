@@ -1,8 +1,7 @@
 from http import HTTPStatus
 
-from django.urls import reverse
-
 import pytest
+from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 
@@ -18,10 +17,10 @@ from pytest_django.asserts import assertRedirects
 )
 @pytest.mark.django_db
 def test_pages_availability_for_anonymous_user(client, name, args,):
-    '''
+    """
     Анонимному пользователю доступны страницы:
     главная, отдельной новости, регистрация, вход и выход из учетной записи
-    '''
+    """
 
     url = reverse(name, args=args)
     response = client.get(url)
@@ -37,10 +36,10 @@ def test_pages_availability_for_anonymous_user(client, name, args,):
 )
 @pytest.mark.django_db
 def test_redirects_for_anonymous_user(client, name, args,):
-    '''
+    """
     Анонимный пользователь перенаправляется на страницу авторизации
     при переходе на страницы редактирования и удаления комментария
-    '''
+    """
 
     login_url = reverse('users:login')
     url = reverse(name, args=args)
@@ -69,11 +68,11 @@ def test_pages_availability_for_different_users(
     name,
     comment_pk,
 ):
-    '''
+    """
     Авторизованный пользователь не может переходить
     на страницы удаления и изменения чужих комментариев.
     Автору доступны страницы удаления и редактирования комментария.
-    '''
+    """
 
     url = reverse(name, args=comment_pk)
     response = parametrized_client.get(url)

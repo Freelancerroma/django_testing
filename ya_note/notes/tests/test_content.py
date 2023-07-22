@@ -20,12 +20,12 @@ class TestContent(TestCase):
         )
 
     def test_notes_list_for_different_users(self):
-        '''
+        """
         Отдельная заметка передаётся на страницу со списком заметок
         в списке object_list в словаре context.
         В список заметок одного пользователя
         не попадают заметки другого пользователя.
-        '''
+        """
         users = (
             (self.author, True),
             (self.reader, False),
@@ -39,7 +39,7 @@ class TestContent(TestCase):
                 self.assertEqual(self.note in object_list, value)
 
     def test_authorized_client_has_form(self):
-        '''На страницы создания и редактирования заметки передаются формы'''
+        """На страницы создания и редактирования заметки передаются формы"""
         urls = (
             ('notes:add', None),
             ('notes:edit', (self.note.slug,)),

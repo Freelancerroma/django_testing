@@ -22,10 +22,10 @@ class TestRoutes(TestCase):
         )
 
     def test_pages_availability_for_anonymous(self):
-        '''
+        """
         Незарегистрированному пользователю доступны страницы:
         главная, регистрации, входа и выхода учетной записи
-        '''
+        """
 
         urls = (
             'notes:home',
@@ -40,12 +40,12 @@ class TestRoutes(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_detail_availability_for_author(self):
-        '''
+        """
         Страницы отдельной заметки, удаления и редактирования заметки
         доступны только автору заметки.
         Если на эти страницы попытается зайти другой пользователь —
         вернётся ошибка 404.
-        '''
+        """
 
         users_statuses = (
             (self.author, HTTPStatus.OK),
@@ -64,7 +64,7 @@ class TestRoutes(TestCase):
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_anonymous(self):
-        '''
+        """
         При попытке перейти на страницу
         списка заметок,
         страницу успешного добавления записи,
@@ -72,7 +72,7 @@ class TestRoutes(TestCase):
         отдельной заметки,
         редактирования или удаления заметки
         анонимный пользователь перенаправляется на страницу логина
-        '''
+        """
 
         login_url = reverse('users:login',)
         for name, args in (
@@ -90,12 +90,12 @@ class TestRoutes(TestCase):
                 self.assertRedirects(response, redirect_url)
 
     def test_add_success_availability(self):
-        '''
+        """
         Аутентифицированному пользователю доступна
         страница со списком заметок,
         страница успешного добавления заметки,
         страница добавления новой заметки
-        '''
+        """
 
         user = self.author
         self.client.force_login(user)

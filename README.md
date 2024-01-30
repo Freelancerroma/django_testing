@@ -34,3 +34,12 @@ python manage.py migrate
 ```
 bash run_tests.sh
 ```
+***
+### Инструменты и стек:
+- Python
+- HTML
+- CSS
+- Django
+- Bootstrap
+- Unittest
+- Pytest

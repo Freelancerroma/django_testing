@@ -10,7 +10,7 @@ Python 3.9 или выше.
 
 1. Склонируйте репозиторий по ссылке:
 ```
-git clone git@github.com:freelancerroma/django_testing.git
+git clone git@github.com:Freelancerroma/django_testing.git
 ```
 2. Установите и активируйте виртуальное окружение:
 ```
